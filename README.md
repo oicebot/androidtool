@@ -12,6 +12,9 @@ Currently works:
 * Push/Pull files into/out of the device
 * `adb install` selected apk file
 
+##Disclaimer
+I'm not responsible for any damaged devices / bricked devices / nuclear wars caused by using this tool. I installed it on my computer and work with my phone with no problems. But since those codes are still in alpha development, please use with care.
+
 ##Requirement
 This code has been tested under:
 
