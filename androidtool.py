@@ -156,6 +156,11 @@ class Android_Tools:
         self.TL_devicepath.configure(relief=FLAT)
         self.TL_devicepath.configure(text='''Device Path:''')
 
+        self.TProgressbar1 = ttk.Progressbar(top)
+        self.TProgressbar1.place(relx=0.44, rely=0.05, relwidth=0.54,
+                                 relheight=0.0, height=19)
+        self.TProgressbar1.configure(length="0")
+
 
 # The following code is added to facilitate the Scrolled widgets you specified.
 

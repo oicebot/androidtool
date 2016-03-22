@@ -4,10 +4,9 @@
 # In conjunction with Tcl version 8.6
 #    Mar 21, 2016 01:59:48 PM
 
-
 import sys
 import os
-from subprocess import check_output, STDOUT, CalledProcessError
+from subprocess import Popen, check_output, STDOUT, CalledProcessError, PIPE
 
 
 try:
@@ -161,6 +160,13 @@ def refresh_devices():
     global found_devices
     try:
         out = check_output(["adb", "devices"])
+
+        w.TProgressbar1.configure(mode='indeterminate')
+        w.TProgressbar1.start()
+        while out is None:
+            w.update()
+        w.TProgressbar1.stop()
+        w.TProgressbar1.configure(mode='determinate')
         devices = []
         for i in out.split('\n')[1:]:
             if i:
@@ -217,6 +223,11 @@ def refresh_list():
     sys.stdout.flush()
 
 
+def adblsdir(cmd):
+    out = Popen(cmd, stdout=PIPE)
+    return iter(out.stdout.readline, b"")
+
+
 def refresh_dir():
     print('androidtool_support.refresh_dir -- this may take some time')
     global files_list
@@ -224,6 +235,7 @@ def refresh_dir():
     global current_device
     global device_file_path
     global found_devices
+    global root
     try:
         if found_devices > 1:
             cmd = ["adb", "-s%s" % current_device, "shell", "ls -R /sdcard/"]
@@ -231,26 +243,45 @@ def refresh_dir():
             cmd = ["adb", "shell", "ls -R /sdcard/"]
 
         #print cmd
-        out = check_output(cmd, STDOUT)
-        temp_file_list = out.split('\r\n')
+        #out = check_output(cmd, STDOUT)
+        w.TProgressbar1.configure(mode='indeterminate')
+        w.TProgressbar1.start()
 
         status = 0
         device_files = {}
         tokens = []
         key = ''
-        for i in temp_file_list:
+        temp_file_list = []
 
+        for line in adblsdir(cmd):
+            root.update()
+            inline = line[:-2]
+            temp_file_list.append(inline)
+
+        for i in temp_file_list:
             if i:
                 if i.startswith(('/')):
                     status = 1
-                    key = i[:-1].replace('/sdcard//', '/sdcard/')
+                    key = i.replace('/sdcard//', '/sdcard/')[:-1]
                 else:
+                    status = 1
                     tokens.append(i)
             else:
                 if status:
                     status = 0
                     device_files[key] = tokens
                     tokens = []
+        device_files[key] = tokens
+
+        #print 'Keys:', device_files.keys()
+
+        #for key in device_files.keys():
+        #    for i in device_files[key]:
+        #        print key,' : ',i
+
+        w.TProgressbar1.stop()
+        w.TProgressbar1.configure(mode='determinate')
+
 
     except CalledProcessError as e:
         t = e.returncode, e.message
