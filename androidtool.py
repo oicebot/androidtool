@@ -81,12 +81,12 @@ class Android_Tools:
         self.TL_select.configure(relief=FLAT)
         self.TL_select.configure(text='''Please select target devices:''')
 
-        self.TB_refreshdev = ttk.Button(top)
-        self.TB_refreshdev.place(relx=0.31, rely=0.03, height=28, width=74)
-        self.TB_refreshdev.configure(command=androidtool_support.refresh_devices)
+        #self.TB_refreshdev = ttk.Button(top)
+        #self.TB_refreshdev.place(relx=0.31, rely=0.03, height=28, width=74)
+        #self.TB_refreshdev.configure(command=androidtool_support.refresh_devices)
 
-        self.TB_refreshdev.configure(takefocus="")
-        self.TB_refreshdev.configure(text='''Refresh''')
+        #self.TB_refreshdev.configure(takefocus="")
+        #self.TB_refreshdev.configure(text='''Refresh''')
 
         self.TC_devices = ttk.Combobox(top, postcommand=androidtool_support.refresh_devices)
         self.TC_devices.place(relx=0.01, rely=0.05, relheight=0.04, relwidth=0.3)
@@ -163,6 +163,13 @@ class Android_Tools:
         self.TProgressbar1.place(relx=0.44, rely=0.05, relwidth=0.54,
                                  relheight=0.0, height=19)
         self.TProgressbar1.configure(length="0")
+
+        self.TB_Browse = ttk.Button(top)
+        self.TB_Browse.place(relx=0.31, rely=0.03, height=28, width=74)
+        self.TB_Browse.configure(takefocus="")
+        self.TB_Browse.configure(text='''Browse Dir''')
+        self.TB_Browse.configure(command=androidtool_support.browse_dir)
+        self.TB_Browse.configure(width=64)
 
 
 # The following code is added to facilitate the Scrolled widgets you specified.

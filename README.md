@@ -3,7 +3,7 @@
 ##Intro
 This is an alpha test project for using ADB to transfer files into mobile devices in Linux. 
 
-Sina Weibo: [@游荡的坎德人](htto://www.weibo.com/nervcn)
+Sina Weibo: [@游荡的坎德人](http://www.weibo.com/nervcn)
 
 TKGUI build with [PAGE](http://page.sourceforge.net/), and code wrote in [UliPad](https://github.com/limodou/ulipad)
 
@@ -39,5 +39,6 @@ Download the files and put in any folder, then run `python androidtool.py`
 
 
 ##ChangeLog
-* 2016-03-25: Update progress bar when detecting devices & push/pull files, and remove non-device results in the combobox.
+* 2016-03-25: Add "Browse Dir" Button to navigate in local folders.
+* 2016-03-24: Update progress bar when detecting devices & push/pull files, and remove non-device results in the combobox.
 * 2016-03-23: Update progress bar (...) when loading file list from device.

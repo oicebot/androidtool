@@ -11,6 +11,7 @@ from subprocess import Popen, check_output, STDOUT, CalledProcessError, PIPE
 
 try:
     from Tkinter import *
+    import tkFileDialog
 except ImportError:
     from tkinter import *
 
@@ -119,7 +120,7 @@ def pull_file():
         t = e.returncode, e.message
         print t
 
-    refresh_list()
+    refresh_list(1)
 
     sys.stdout.flush()
 
@@ -212,7 +213,7 @@ def refresh_devices():
     sys.stdout.flush()
 
 
-def refresh_list():
+def refresh_list(target=2):
     print('androidtool_support.refresh_list')
     global file_path
     global files_list
@@ -240,14 +241,16 @@ def refresh_list():
         else:
             w.List_local.insert(END, i + '/')
 
-    w.List_device.delete(0, END)
-    w.List_device.insert(END, '../')
+    if target == 2:
 
-    if device_file_path in device_files.keys():
-        for i in device_files[device_file_path]:
-            w.List_device.insert(END, i)
-    else:
-        w.List_device.insert(END, 'Try refresh dir')
+        w.List_device.delete(0, END)
+        w.List_device.insert(END, '../')
+
+        if device_file_path in device_files.keys():
+            for i in device_files[device_file_path]:
+                w.List_device.insert(END, i)
+        else:
+            w.List_device.insert(END, 'Try refresh dir')
 
     sys.stdout.flush()
 
@@ -338,14 +341,14 @@ def double_click2(top):
                 temp_path = '/sdcard/'
             print 'Jump to: ', temp_path
             device_file_path = temp_path
-            refresh_list()
+            refresh_list(2)
     else:
         temp_path = os.path.join(device_file_path,
                                  device_files[device_file_path][clicked - 1])
         if temp_path in device_files.keys():
             print 'Jump to: ', temp_path
             device_file_path = temp_path
-            refresh_list()
+            refresh_list(2)
         else:
             print device_files[device_file_path][clicked - 1]
 
@@ -362,17 +365,29 @@ def double_click(top):
     if clicked == 0:
         file_path = os.path.dirname(file_path)
         os.walk(file_path)
-        refresh_list()
+        refresh_list(1)
     elif os.path.isfile(os.path.join(file_path, files_list[clicked - 1])):
         pass
     elif os.path.isdir(os.path.join(file_path, files_list[clicked - 1])):
         file_path = os.path.join(file_path, files_list[clicked - 1])
         os.walk(file_path)
-        refresh_list()
+        refresh_list(1)
     else:
         pass
 
     sys.stdout.flush()
+
+def browse_dir():
+    print('androidtool_support.browse_dir')
+    global file_path
+    global files_list
+    new_dir = tkFileDialog.askdirectory()
+    #print(new_dir)
+    if new_dir:
+        file_path = new_dir
+        os.walk(file_path)
+        refresh_list(1)
+
 
 
 def newselection(top):
