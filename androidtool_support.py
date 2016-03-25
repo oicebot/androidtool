@@ -102,11 +102,18 @@ def pull_file():
              device_file, file_path, ] #.replace(' ','\ '), ]
         else:
             cmd = ["adb", "pull", device_file, file_path, ]
-        print cmd
-        out = check_output(cmd, STDOUT)
-        info = out.split('\r\n')
 
-        print info
+        w.TProgressbar1.configure(mode='indeterminate')
+        w.TProgressbar1.start()
+
+        out = Popen(cmd, shell=False)
+
+        while out.poll() is None:
+            root.update()
+
+        w.TProgressbar1.stop()
+        w.TProgressbar1.configure(mode='determinate')
+
 
     except CalledProcessError as e:
         t = e.returncode, e.message
@@ -141,11 +148,21 @@ def push_file():
         else:
             cmd = ["adb", "push", local_file, device_file_path, ]
 
-        print cmd
-        out = check_output(cmd, STDOUT)
-        info = out.split('\r\n')
+        w.TProgressbar1.configure(mode='indeterminate')
+        w.TProgressbar1.start()
 
-        print info
+        out = Popen(cmd, shell=False)
+
+        while out.poll() is None:
+            root.update()
+
+        #for line in adblsdir(cmd):
+        #    root.update()
+        #    inline = line[:-2]
+        #    print inline
+
+        w.TProgressbar1.stop()
+        w.TProgressbar1.configure(mode='determinate')
 
     except CalledProcessError as e:
         t = e.returncode, e.message
@@ -158,19 +175,31 @@ def push_file():
 def refresh_devices():
     print('androidtool_support.refresh_devices')
     global found_devices
+    global root
     try:
-        out = check_output(["adb", "devices"])
+        #out = check_output(["adb", "devices"])
+        out = Popen(["adb devices"], shell=True, stdout=PIPE)
 
         w.TProgressbar1.configure(mode='indeterminate')
         w.TProgressbar1.start()
-        while out is None:
-            w.update()
+
+        while out.poll() is None:
+            root.update()
+
         w.TProgressbar1.stop()
         w.TProgressbar1.configure(mode='determinate')
+
         devices = []
-        for i in out.split('\n')[1:]:
+
+        while True:
+            i = out.stdout.readline()
+            print i
             if i:
-                devices.append(i)
+                if len(i.split('\t')) > 1:
+                    devices.append(i)
+            else:
+                break
+
         w.TC_devices['values'] = devices
         found_devices = len(devices)
 

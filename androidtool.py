@@ -27,6 +27,7 @@ def vp_start_gui():
     androidtool_support.set_Tk_var()
     top = Android_Tools(root)
     androidtool_support.init(root, top)
+    #ubuntutool_support.init(root, top)
     root.mainloop()
 
 w = None
@@ -40,6 +41,7 @@ def create_Android_Tools(root, *args, **kwargs):
     androidtool_support.set_Tk_var()
     top = Android_Tools(w)
     androidtool_support.init(w, top, *args, **kwargs)
+
     return (w, top)
 
 
@@ -82,6 +84,7 @@ class Android_Tools:
         self.TB_refreshdev = ttk.Button(top)
         self.TB_refreshdev.place(relx=0.31, rely=0.03, height=28, width=74)
         self.TB_refreshdev.configure(command=androidtool_support.refresh_devices)
+
         self.TB_refreshdev.configure(takefocus="")
         self.TB_refreshdev.configure(text='''Refresh''')
 

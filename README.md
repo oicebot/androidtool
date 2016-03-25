@@ -1,19 +1,29 @@
 #Android Tool
 
 ##Intro
-This is an alpha test project for using ADB to transfer files into mobile devices in Linux.
+This is an alpha test project for using ADB to transfer files into mobile devices in Linux. 
+
+Sina Weibo: [@游荡的坎德人](htto://www.weibo.com/nervcn)
 
 TKGUI build with [PAGE](http://page.sourceforge.net/), and code wrote in [UliPad](https://github.com/limodou/ulipad)
 
-Currently works:
+----
+
+##Disclaimer
+I'm not responsible for any damaged devices / bricked devices / nuclear wars caused by using this tool. I installed it on my computer and work with my phone with no problems. But since those codes are still in alpha development, please use with care.
+
+###What Currently works:
 
 * List devices, and select between different devices.
 * List files/dirs from target device.
 * Push/Pull files into/out of the device
 * `adb install` selected apk file
 
-##Disclaimer
-I'm not responsible for any damaged devices / bricked devices / nuclear wars caused by using this tool. I installed it on my computer and work with my phone with no problems. But since those codes are still in alpha development, please use with care.
+###TODO:
+1. long serial numbers, such as Nexus 6P wasn't detected properly when using code like: `"adb -s %s shell ls /sdcard/" % device_ID` 
+2. add fool-proof ( still not started )
+3. maybe add UbuntuTouch devices support later ( wasn't easy for me, lol )
+
 
 ##Requirement
 This code has been tested under:
@@ -27,7 +37,7 @@ This code has been tested under:
 ##Installation
 Download the files and put in any folder, then run `python androidtool.py`
 
-##TODO:
-1. long serial numbers, such as Nexus 6P wasn't detected properly when using code like: `"adb -s %s shell ls /sdcard/" % device_ID`
-2. add fool-proof
-3. maybe add some waiting information while loading device file lists.
+
+##ChangeLog
+* 2016-03-25: Update progress bar when detecting devices & push/pull files, and remove non-device results in the combobox.
+* 2016-03-23: Update progress bar (...) when loading file list from device.
