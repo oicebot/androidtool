@@ -11,7 +11,6 @@ from subprocess import Popen, check_output, STDOUT, CalledProcessError, PIPE
 
 try:
     from Tkinter import *
-    import tkFileDialog
 except ImportError:
     from tkinter import *
 
@@ -33,7 +32,7 @@ def set_Tk_var():
     files_list = []
     device_files = {}
     file_path = os.path.dirname(os.path.abspath(__file__))
-    device_file_path= '/sdcard/Download'
+    device_file_path= '/Downloads'
 
     combobox = StringVar()
     combobox.set('Please Select:')
@@ -64,7 +63,7 @@ def install_apk():
             return
         if local_file.endswith(('.apk')):
             if found_devices > 1:
-                cmd = ["adb", "-s %s" % current_device, "install", local_file, ]
+                cmd = ["adb", "-s%s" % current_device, "install", local_file, ]
             else:
                 cmd = ["adb", "install", local_file, ] #.replace(' ','\ '), ]
 
@@ -99,28 +98,21 @@ def pull_file():
                                    device_files[device_file_path][clicked - 1])
 
         if found_devices > 1:
-            cmd = ["adb", "-s %s" % current_device, "pull",
+            cmd = ["adb", "-s%s" % current_device, "pull",
              device_file, file_path, ] #.replace(' ','\ '), ]
         else:
             cmd = ["adb", "pull", device_file, file_path, ]
+        print cmd
+        out = check_output(cmd, STDOUT)
+        info = out.split('\r\n')
 
-        w.TProgressbar1.configure(mode='indeterminate')
-        w.TProgressbar1.start()
-
-        out = Popen(cmd, shell=False)
-
-        while out.poll() is None:
-            root.update()
-
-        w.TProgressbar1.stop()
-        w.TProgressbar1.configure(mode='determinate')
-
+        print info
 
     except CalledProcessError as e:
         t = e.returncode, e.message
         print t
 
-    refresh_list(1)
+    refresh_list()
 
     sys.stdout.flush()
 
@@ -145,22 +137,20 @@ def push_file():
             local_file = local_file + '/'
 
         if found_devices > 1:
-            cmd = ["adb", "-s %s" % current_device, "push", local_file, device_file_path, ]
+            cmd = ["adb", "-s%s" % current_device, "push", local_file, device_file_path, ]
         else:
             cmd = ["adb", "push", local_file, device_file_path, ]
 
         w.TProgressbar1.configure(mode='indeterminate')
         w.TProgressbar1.start()
 
-        out = Popen(cmd, shell=False)
+        #out = check_output(cmd, STDOUT)
+        #info = out.split('\r\n')
 
-        while out.poll() is None:
+        for line in adblsdir(cmd):
             root.update()
-
-        #for line in adblsdir(cmd):
-        #    root.update()
-        #    inline = line[:-2]
-        #    print inline
+            inline = line[:-2]
+            print inline
 
         w.TProgressbar1.stop()
         w.TProgressbar1.configure(mode='determinate')
@@ -178,29 +168,18 @@ def refresh_devices():
     global found_devices
     global root
     try:
-        #out = check_output(["adb", "devices"])
-        out = Popen(["adb devices"], shell=True, stdout=PIPE)
+        out = check_output(["adb", "devices"])
 
         w.TProgressbar1.configure(mode='indeterminate')
         w.TProgressbar1.start()
-
-        while out.poll() is None:
+        while out is None:
             root.update()
-
         w.TProgressbar1.stop()
         w.TProgressbar1.configure(mode='determinate')
-
         devices = []
-
-        while True:
-            i = out.stdout.readline()
-            print i
+        for i in out.split('\n')[1:]:
             if i:
-                if len(i.split('\t')) > 1:
-                    devices.append(i)
-            else:
-                break
-
+                devices.append(i)
         w.TC_devices['values'] = devices
         found_devices = len(devices)
 
@@ -213,7 +192,7 @@ def refresh_devices():
     sys.stdout.flush()
 
 
-def refresh_list(target=2):
+def refresh_list():
     print('androidtool_support.refresh_list')
     global file_path
     global files_list
@@ -241,16 +220,14 @@ def refresh_list(target=2):
         else:
             w.List_local.insert(END, i + '/')
 
-    if target == 2:
+    w.List_device.delete(0, END)
+    w.List_device.insert(END, '../')
 
-        w.List_device.delete(0, END)
-        w.List_device.insert(END, '../')
-
-        if device_file_path in device_files.keys():
-            for i in device_files[device_file_path]:
-                w.List_device.insert(END, i)
-        else:
-            w.List_device.insert(END, 'Try refresh dir')
+    if device_file_path in device_files.keys():
+        for i in device_files[device_file_path]:
+            w.List_device.insert(END, i)
+    else:
+        w.List_device.insert(END, 'Try refresh dir')
 
     sys.stdout.flush()
 
@@ -270,11 +247,11 @@ def refresh_dir():
     global root
     try:
         if found_devices > 1:
-            cmd = ["adb", "-s%s" % current_device, "shell", "ls -R /sdcard/"]
+            cmd = ["adb", "-s%s" % current_device, "shell", "ls -R "]
         else:
-            cmd = ["adb", "shell", "ls -R /sdcard/"]
+            cmd = ["adb", "shell", "ls -R "]
 
-        print cmd
+        #print cmd
         #out = check_output(cmd, STDOUT)
         w.TProgressbar1.configure(mode='indeterminate')
         w.TProgressbar1.start()
@@ -341,14 +318,14 @@ def double_click2(top):
                 temp_path = '/sdcard/'
             print 'Jump to: ', temp_path
             device_file_path = temp_path
-            refresh_list(2)
+            refresh_list()
     else:
         temp_path = os.path.join(device_file_path,
                                  device_files[device_file_path][clicked - 1])
         if temp_path in device_files.keys():
             print 'Jump to: ', temp_path
             device_file_path = temp_path
-            refresh_list(2)
+            refresh_list()
         else:
             print device_files[device_file_path][clicked - 1]
 
@@ -365,29 +342,17 @@ def double_click(top):
     if clicked == 0:
         file_path = os.path.dirname(file_path)
         os.walk(file_path)
-        refresh_list(1)
+        refresh_list()
     elif os.path.isfile(os.path.join(file_path, files_list[clicked - 1])):
         pass
     elif os.path.isdir(os.path.join(file_path, files_list[clicked - 1])):
         file_path = os.path.join(file_path, files_list[clicked - 1])
         os.walk(file_path)
-        refresh_list(1)
+        refresh_list()
     else:
         pass
 
     sys.stdout.flush()
-
-def browse_dir():
-    print('androidtool_support.browse_dir')
-    global file_path
-    global files_list
-    new_dir = tkFileDialog.askdirectory()
-    #print(new_dir)
-    if new_dir:
-        file_path = new_dir
-        os.walk(file_path)
-        refresh_list(1)
-
 
 
 def newselection(top):
