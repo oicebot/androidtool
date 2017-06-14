@@ -270,7 +270,7 @@ def refresh_dir():
     global root
     try:
         if found_devices > 1:
-            cmd = ["adb", "-s%s" % current_device, "shell", "ls -R /sdcard/"]
+            cmd = ["adb", "-s%s" % current_device, "shell", "ls -1R /sdcard/"]
         else:
             cmd = ["adb", "shell", "ls -R /sdcard/"]
 
